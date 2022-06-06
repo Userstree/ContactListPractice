@@ -9,11 +9,10 @@
 import UIKit
 import Contacts
 
+
 class HomeViewController: UIViewController {
 
-    var dumbData = [Contact(name: "Abbot Lisbon", number: "+7 777 123 43 32"),
-                    Contact(name: "Zane Wayne", number: "+7 777 165 85 58"),
-                    Contact(name: "John Hopkins", number: "+7 777 424 54 66")]
+    var contacts = [Contact]()
 
     private lazy var table: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
@@ -30,15 +29,11 @@ class HomeViewController: UIViewController {
         setStyle()
         configureAddButton()
         configureViews()
+        fetchContacts()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        fetchContacts()
-    }
-    
-    private func fetchContacts() {
 
     }
 
@@ -52,40 +47,33 @@ class HomeViewController: UIViewController {
         title = "Contacts"
     }
 
-    @objc private func addButtonTapped(){
-        navigationController?.pushViewController(AddContactVIewController(), animated: true)
+    @objc private func addButtonTapped() {
+        navigationController?.pushViewController(EditOrAddContactViewController(), animated: true)
     }
 
-    func findContacts () -> [CNContact]{
-
-//        let keysToFetch = [CNContactFormatter.descriptorForRequiredKeysForStyle(.FullName),CNContactPhoneNumbersKey]
-//        let fetchRequest = CNContactFetchRequest( keysToFetch: keysToFetch)
-        let keyToFetch = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName)]
-        let fetchRequest = CNContactFetchRequest(keysToFetch: keyToFetch)
-        var contacts = [CNContact]()
-
-        fetchRequest.mutableObjects = false
-        fetchRequest.unifyResults = true
-        fetchRequest.sortOrder = .userDefault
-
-        let contactStoreID = CNContactStore().defaultContainerIdentifier()
-        print("\(contactStoreID)")
-
-
-        do {
-
-//            try CNContactStore().enumerateContactsWithFetchRequest(fetchRequest) { (contact, stop) -> Void in
-//                contacts.append(contact)
-//            }
-            try CNContactStore().enumerateContacts(with: fetchRequest) { contact, stop in
-                
+    private func fetchContacts() {
+        let store = CNContactStore()
+        store.requestAccess(for: .contacts) { (granted, error) in
+            if let error = error {
+                print("failed to request access", error)
+                return
             }
-        } catch let e as NSError {
-            print(e.localizedDescription)
+            if granted {
+                let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey]
+                let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
+                do {
+                    try store.enumerateContacts(with: request, usingBlock: { (contact, stopPointer) in
+                        self.contacts.append(Contact(firstName: contact.givenName,
+                                lastName: contact.familyName,
+                                telephone: contact.phoneNumbers.first?.value.stringValue ?? ""))
+                    })
+                } catch let error {
+                    print("Failed to enumerate contact", error)
+                }
+            } else {
+                print("access denied")
+            }
         }
-
-        return contacts
-
     }
 
     private func configureViews() {
@@ -107,7 +95,7 @@ extension HomeViewController: UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let contactInfoVC = ContactInfoViewController(contactName: dumbData[indexPath.row].name, phoneNumber: dumbData[indexPath.row].number)
+        let contactInfoVC = DetailsViewController(contactName: (contacts[indexPath.row].firstName + " " + contacts[indexPath.row].lastName), phoneNumber: contacts[indexPath.row].telephone)
         self.navigationController?.pushViewController(contactInfoVC, animated: true)
     }
 }
@@ -115,12 +103,12 @@ extension HomeViewController: UITableViewDelegate {
 extension HomeViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dumbData.count
+        contacts.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ContactCell.identifier, for: indexPath) as! ContactCell
-        cell.bind(with: dumbData[indexPath.row])
+        cell.bind(with: contacts[indexPath.row])
         return cell
     }
 
@@ -129,3 +117,9 @@ extension HomeViewController: UITableViewDataSource {
     }
 }
 
+extension HomeViewController: SaveContactDelegate {
+
+    func saveWith(name: String, phoneNumber: String) {
+
+    }
+}

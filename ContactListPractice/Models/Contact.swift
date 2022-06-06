@@ -5,6 +5,7 @@
 import Foundation
 
 struct Contact {
-    let name: String
-    let number: String
+    var firstName: String
+    var lastName: String
+    var telephone: String
 }

@@ -4,8 +4,8 @@
 
 import UIKit
 
-protocol EditContactDelegate: AnyObject {
-    func editedWith(name: String, phoneNumber: String, gender: String)
+protocol EditContactDelegate: class {
+    func editWith(fullName: String, phoneNumber: String, indexInTable: Int)
 }
 
 protocol SaveContactDelegate: AnyObject {
@@ -14,20 +14,26 @@ protocol SaveContactDelegate: AnyObject {
 
 class EditOrAddContactViewController: UIViewController {
 
-    private var name: String = ""
+    private var fullName: String = ""
     private var phoneNumber: String = ""
-    private var setGender: String = ""
+    private var indexInTable: Int = 0
+    private var setGender: String  = "male.jpeg" {
+        didSet {
+            setGender += ".jpeg"
+        }
+    }
 
     weak var editDelegate: EditContactDelegate?
 
-    init(name: String, phoneNumber: String) {
-        self.name = name
-        self.phoneNumber = phoneNumber
+    init(fullName: String, phoneNumber: String, indexInTable: Int) {
         super.init(nibName: nil, bundle: nil)
+        self.fullName = fullName
+        self.phoneNumber = phoneNumber
+        self.indexInTable = indexInTable
     }
 
     convenience init() {
-        self.init(name: "Name", phoneNumber: "Phone Number")
+        self.init(fullName: "Name", phoneNumber: "Phone Number", indexInTable: 0)
     }
 
     required init?(coder: NSCoder) {
@@ -101,7 +107,7 @@ class EditOrAddContactViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.nameField.placeholder = name
+        self.nameField.placeholder = fullName
         self.phoneNumberField.placeholder = phoneNumber
         configureAddButton()
     }
@@ -121,12 +127,14 @@ class EditOrAddContactViewController: UIViewController {
     }
 
     @objc private func saveButtonTapped() {
-        print("hi")
         if self.isModal {
-            editDelegate?.editedWith(name: nameField.text ?? "", phoneNumber: phoneNumberField.text ?? "", gender: setGender)
+            print(setGender)
+            if let delegate = self.editDelegate {
+                delegate.editWith(fullName: nameField.text ?? "", phoneNumber: phoneNumberField.text ?? "", indexInTable: indexInTable)
+            }
             self.dismiss(animated: true)
         } else {
-
+            print("Else tapped")
         }
     }
 
@@ -178,6 +186,6 @@ extension EditOrAddContactViewController: UIPickerViewDataSource, UIPickerViewDe
 
     public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let gender = gendersList[row]
-        self.setGender = gender + ".jpeg"
+        self.setGender = gender
     }
 }

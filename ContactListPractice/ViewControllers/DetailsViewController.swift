@@ -4,16 +4,28 @@
 
 import UIKit
 
+protocol PassInfoToHomeDelegate: AnyObject {
+    func modifyWith(fullName: String, phoneNumber: String, indexInTable: Int)
+}
+
 class DetailsViewController: UIViewController {
 
-    private var name: String = ""
-    private var phoneNumber: String = ""
+    weak var passInfoDelegate: PassInfoToHomeDelegate?
 
-    init(contactName: String, phoneNumber: String) {
+    private var fullName: String = ""
+    private var phoneNumber: String = ""
+    private var indexInTable: Int = 0
+
+    init(fullName: String, phoneNumber: String, indexInTable: Int) {
         super.init(nibName: nil, bundle: nil)
-        self.name = contactName
+        self.fullName = fullName
         self.phoneNumber = phoneNumber
+        self.indexInTable = indexInTable
         self.personImage.image = UIImage(named: "male.jpeg")
+    }
+
+    convenience init() {
+        self.init(fullName: "Name", phoneNumber: "Number", indexInTable: 0)
     }
 
     required init?(coder: NSCoder) {
@@ -59,28 +71,28 @@ class DetailsViewController: UIViewController {
         return button
     }()
 
-    private lazy var contactInfoVerticalStack: UIStackView = {
+    private lazy var contactInfoVStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 20
         return stack
     }()
 
-    private lazy var upperHorizontalStack: UIStackView = {
+    private lazy var upperHStack: UIStackView = {
         let stack = UIStackView()
         stack.distribution = .fillProportionally
         stack.alignment = .center
         return stack
     }()
 
-    private lazy var bottomVerticalStack: UIStackView = {
+    private lazy var bottomVStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 10
         return stack
     }()
 
-    private lazy var mainVerticalStack: UIStackView = {
+    private lazy var mainVStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 20, right: 15)
@@ -99,14 +111,8 @@ class DetailsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.nameLabel.text = name
+        self.nameLabel.text = fullName
         self.phoneNumberLabel.text = phoneNumber
-        setDelegates()
-    }
-
-    private func setDelegates() {
-        let editVC = EditOrAddContactViewController()
-        editVC.editDelegate = self
     }
 
     private func addRightBarButton() {
@@ -114,8 +120,23 @@ class DetailsViewController: UIViewController {
         navigationItem.rightBarButtonItem = editButton
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        guard let number = phoneNumberLabel.text else {
+            return
+        }
+
+        guard let name = nameLabel.text else {
+            return
+        }
+
+        passInfoDelegate?.modifyWith(fullName: name, phoneNumber: number, indexInTable: indexInTable)
+    }
+
     @objc private func editButtonTapped() {
-        let editContactNavController = UINavigationController(rootViewController: EditOrAddContactViewController(name: name, phoneNumber: phoneNumber))
+        let editVC = EditOrAddContactViewController(fullName: fullName, phoneNumber: phoneNumber, indexInTable: indexInTable)
+        editVC.editDelegate = self
+        let editContactNavController = UINavigationController(rootViewController: editVC)
         self.modalPresentationStyle = .formSheet
         self.present(editContactNavController, animated: true)
     }
@@ -126,20 +147,20 @@ class DetailsViewController: UIViewController {
     }
 
     private func configureViews() {
-        [nameLabel, phoneNumberLabel].forEach(contactInfoVerticalStack.addArrangedSubview)
-        [personImage, contactInfoVerticalStack].forEach(upperHorizontalStack.addArrangedSubview)
-        [callButton, deleteButton].forEach(bottomVerticalStack.addArrangedSubview)
-        [upperHorizontalStack, bottomVerticalStack].forEach(mainVerticalStack.addArrangedSubview)
-        view.addSubview(mainVerticalStack)
+        [nameLabel, phoneNumberLabel].forEach(contactInfoVStack.addArrangedSubview)
+        [personImage, contactInfoVStack].forEach(upperHStack.addArrangedSubview)
+        [callButton, deleteButton].forEach(bottomVStack.addArrangedSubview)
+        [upperHStack, bottomVStack].forEach(mainVStack.addArrangedSubview)
+        view.addSubview(mainVStack)
         makeConstraints()
     }
 
     private func makeConstraints() {
         NSLayoutConstraint.activate([
-            mainVerticalStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            mainVerticalStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            mainVerticalStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            mainVerticalStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            mainVStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            mainVStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            mainVStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            mainVStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
 
             personImage.heightAnchor.constraint(equalToConstant: 85),
             personImage.widthAnchor.constraint(equalToConstant: 85)
@@ -149,9 +170,10 @@ class DetailsViewController: UIViewController {
 
 extension DetailsViewController: EditContactDelegate {
 
-    func editedWith(name: String, phoneNumber: String, gender: String) {
-        self.nameLabel.text = name
+    func editWith(fullName: String, phoneNumber: String, indexInTable: Int) {
+        self.nameLabel.text = fullName
         self.phoneNumberLabel.text = phoneNumber
-        print(name, " and ", phoneNumber)
+//        self.fullName = fullName
+//        self.phoneNumber = phoneNumber
     }
 }

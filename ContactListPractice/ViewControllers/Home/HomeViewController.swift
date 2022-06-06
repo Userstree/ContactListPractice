@@ -9,10 +9,9 @@
 import UIKit
 import Contacts
 
-
 class HomeViewController: UIViewController {
 
-    var contacts = [Contact]()
+    var contacts: [Contact] = [Contact]()
 
     private lazy var table: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
@@ -95,7 +94,13 @@ extension HomeViewController: UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let contactInfoVC = DetailsViewController(contactName: (contacts[indexPath.row].firstName + " " + contacts[indexPath.row].lastName), phoneNumber: contacts[indexPath.row].telephone)
+        let contactInfoVC = DetailsViewController(
+                fullName: (contacts[indexPath.row].firstName + " " + contacts[indexPath.row].lastName),
+                phoneNumber: contacts[indexPath.row].telephone,
+                indexInTable: indexPath.row)
+
+        contactInfoVC.passInfoDelegate = self
+
         self.navigationController?.pushViewController(contactInfoVC, animated: true)
     }
 }
@@ -121,5 +126,29 @@ extension HomeViewController: SaveContactDelegate {
 
     func saveWith(name: String, phoneNumber: String) {
 
+    }
+}
+
+extension  HomeViewController: EditContactDelegate {
+
+    func editWith(fullName: String, phoneNumber: String, indexInTable: Int) {
+//        let fullNameComponents = fullName.components(separatedBy: " ")
+//        let firstName = fullNameComponents[0]
+//        let lastName = fullNameComponents[1]
+//        self.contacts[indexInTable] = Contact(firstName: firstName, lastName: lastName, telephone: phoneNumber)
+    }
+}
+
+extension  HomeViewController: PassInfoToHomeDelegate {
+
+    func modifyWith(fullName: String, phoneNumber: String, indexInTable: Int) {
+        print(fullName)
+        let fullNameComponents = fullName.components(separatedBy: " ")
+        let firstName = fullNameComponents[0]
+        let lastName = fullNameComponents[1]
+        let newContact = Contact(firstName: firstName, lastName: lastName, telephone: phoneNumber)
+        self.contacts.remove(at: indexInTable)
+        self.contacts.insert(newContact, at: indexInTable)
+        self.table.reloadData()
     }
 }

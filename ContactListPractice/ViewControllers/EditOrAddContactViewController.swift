@@ -4,7 +4,7 @@
 
 import UIKit
 
-protocol EditContactDelegate: class {
+protocol EditContactDelegate: AnyObject {
     func editWith(fullName: String, phoneNumber: String, indexInTable: Int)
 }
 
@@ -17,7 +17,8 @@ class EditOrAddContactViewController: UIViewController {
     private var fullName: String = ""
     private var phoneNumber: String = ""
     private var indexInTable: Int = 0
-    private var setGender: String  = "male.jpeg" {
+
+    private var setGender: String = "male.jpeg" {
         didSet {
             setGender += ".jpeg"
         }
@@ -129,13 +130,17 @@ class EditOrAddContactViewController: UIViewController {
 
     @objc private func saveButtonTapped() {
         if self.isModal {
-            print(setGender)
-            if let delegate = self.editDelegate {
-                delegate.editWith(fullName: nameField.text ?? "", phoneNumber: phoneNumberField.text ?? "", indexInTable: indexInTable)
+            var nameToPass = ""
+
+            if nameField.text == nil {
+
             }
+            editDelegate?.editWith(fullName: nameField.text ?? "", phoneNumber: phoneNumberField.text ?? "", indexInTable: indexInTable)
             self.dismiss(animated: true)
         } else {
-            print("Else tapped")
+            guard let name = nameField.text, let number = phoneNumberField.text else { return }
+            saveDelegate?.saveWith(name: name, phoneNumber: number)
+            self.navigationController?.popToRootViewController(animated: true)
         }
     }
 
@@ -168,7 +173,6 @@ class EditOrAddContactViewController: UIViewController {
             upperVStack.heightAnchor.constraint(equalToConstant: view.frame.height / 2)
         ])
     }
-
 }
 
 extension EditOrAddContactViewController: UIPickerViewDataSource, UIPickerViewDelegate {
@@ -178,11 +182,11 @@ extension EditOrAddContactViewController: UIPickerViewDataSource, UIPickerViewDe
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        2
+        gendersList.count
     }
 
     public func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return gendersList[row]
+        gendersList[row]
     }
 
     public func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

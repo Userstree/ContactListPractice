@@ -11,8 +11,42 @@ import Contacts
 
 class HomeViewController: UIViewController {
 
-    var contacts: [Contact] = [Contact]()
+    var contacts: [Contact] {
+        didSet {
+            if contacts.isEmpty {
+                print("Empty")
+                self.table.removeFromSuperview()
+                self.view.bringSubviewToFront(noContactsMessageLabel)
+            } else {
+                self.view.addSubview(table)
+                self.view.bringSubviewToFront(table)
+            }
+        }
+    }
 
+    init(contacts: [Contact]) {
+        self.contacts = contacts
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder, contacts: [Contact]) {
+        self.contacts = contacts
+        super.init(coder: coder)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private var noContactsMessageLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No contacts"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .black
+        label.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+        return label
+    }()
+    
     private lazy var table: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.register(ContactCell.self, forCellReuseIdentifier: ContactCell.identifier)
@@ -24,17 +58,30 @@ class HomeViewController: UIViewController {
 
     override func loadView() {
         super.loadView()
-        // Do any additional setup after loading the view.
         setStyle()
-        configureAddButton()
-        configureViews()
-        fetchContacts()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        configureAddButton()
+        fetchContacts()
+        if contacts.isEmpty {
+            self.makeConstraintsForLabel()
+        } else {
+//            configureTableView()
+            configureTable()
+        }
     }
+
+//    private func configureTableView() {
+//        let tableView = UITableView()
+//        tableView.register(ContactCell.self, forCellReuseIdentifier: ContactCell.identifier)
+//        tableView.delegate = self
+//        tableView.dataSource = self
+//        tableView.translatesAutoresizingMaskIntoConstraints = false
+//        self.table = tableView
+//    }
 
     private func configureAddButton() {
         let add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
@@ -48,8 +95,8 @@ class HomeViewController: UIViewController {
 
     @objc private func addButtonTapped() {
         let editVC = EditOrAddContactViewController()
-
-        navigationController?.pushViewController(, animated: true)
+        editVC.saveDelegate = self
+        navigationController?.pushViewController(editVC, animated: true)
     }
 
     private func fetchContacts() {
@@ -77,17 +124,26 @@ class HomeViewController: UIViewController {
         }
     }
 
-    private func configureViews() {
+    private func configureTable() {
         view.addSubview(table)
-        makeConstraints()
+        makeTableConstraints()
     }
 
-    private func makeConstraints() {
+    private func makeTableConstraints() {
         NSLayoutConstraint.activate([
             table.topAnchor.constraint(equalTo: view.topAnchor),
             table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            table.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
+    private func makeConstraintsForLabel() {
+        view.addSubview(table)
+
+        NSLayoutConstraint.activate([
+            noContactsMessageLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            noContactsMessageLabel.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
         ])
     }
 }
@@ -138,13 +194,23 @@ extension HomeViewController: UITableViewDataSource {
 extension HomeViewController: SaveContactDelegate {
 
     func saveWith(name: String, phoneNumber: String) {
+        let nameComponents = name.components(separatedBy: " ")
 
+        if nameComponents.count > 1 {
+            let firstName = nameComponents[0]
+            let lastName = nameComponents[1]
+            contacts.append(Contact(firstName: firstName, lastName: lastName, telephone: phoneNumber))
+        } else if nameComponents.count == 1 {
+            contacts.append(Contact(firstName: name, lastName: "", telephone: phoneNumber))
+        }
+        self.table.reloadData()
     }
 }
 
 extension  HomeViewController: EditContactDelegate {
 
     func editWith(fullName: String, phoneNumber: String, indexInTable: Int) {
+        print("rerger")
 //        let fullNameComponents = fullName.components(separatedBy: " ")
 //        let firstName = fullNameComponents[0]
 //        let lastName = fullNameComponents[1]

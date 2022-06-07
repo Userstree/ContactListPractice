@@ -173,7 +173,5 @@ extension DetailsViewController: EditContactDelegate {
     func editWith(fullName: String, phoneNumber: String, indexInTable: Int) {
         self.nameLabel.text = fullName
         self.phoneNumberLabel.text = phoneNumber
-//        self.fullName = fullName
-//        self.phoneNumber = phoneNumber
     }
 }

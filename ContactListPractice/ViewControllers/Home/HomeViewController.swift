@@ -47,7 +47,9 @@ class HomeViewController: UIViewController {
     }
 
     @objc private func addButtonTapped() {
-        navigationController?.pushViewController(EditOrAddContactViewController(), animated: true)
+        let editVC = EditOrAddContactViewController()
+
+        navigationController?.pushViewController(, animated: true)
     }
 
     private func fetchContacts() {
@@ -117,6 +119,17 @@ extension HomeViewController: UITableViewDataSource {
         return cell
     }
 
+    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        true
+    }
+
+    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            contacts.remove(at: indexPath.row)
+            tableView.reloadData()
+        }
+    }
+
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         100
     }
@@ -142,13 +155,11 @@ extension  HomeViewController: EditContactDelegate {
 extension  HomeViewController: PassInfoToHomeDelegate {
 
     func modifyWith(fullName: String, phoneNumber: String, indexInTable: Int) {
-        print(fullName)
         let fullNameComponents = fullName.components(separatedBy: " ")
         let firstName = fullNameComponents[0]
         let lastName = fullNameComponents[1]
         let newContact = Contact(firstName: firstName, lastName: lastName, telephone: phoneNumber)
-        self.contacts.remove(at: indexInTable)
-        self.contacts.insert(newContact, at: indexInTable)
-        self.table.reloadData()
+        let cell = table.cellForRow(at: IndexPath(row: indexInTable, section: 0)) as! ContactCell
+        cell.bind(with: newContact)
     }
 }

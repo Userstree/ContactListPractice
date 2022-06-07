@@ -24,6 +24,7 @@ class EditOrAddContactViewController: UIViewController {
     }
 
     weak var editDelegate: EditContactDelegate?
+    weak var saveDelegate: SaveContactDelegate?
 
     init(fullName: String, phoneNumber: String, indexInTable: Int) {
         super.init(nibName: nil, bundle: nil)

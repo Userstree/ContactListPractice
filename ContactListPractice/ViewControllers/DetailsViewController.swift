@@ -16,20 +16,23 @@ class DetailsViewController: UIViewController {
     private var phoneNumber: String = ""
     private var indexInTable: Int = 0
 
-    init(fullName: String, phoneNumber: String, indexInTable: Int) {
-        super.init(nibName: nil, bundle: nil)
-        self.fullName = fullName
-        self.phoneNumber = phoneNumber
+    private var contactsViewModel: ContactsViewModel
+
+    init (viewModel: ContactsViewModel, indexInTable: Int) {
+        self.contactsViewModel = viewModel
+        self.fullName = viewModel.contacts[indexInTable].firstName + " " + viewModel.contacts[indexInTable].lastName
+        self.phoneNumber = viewModel.contacts[indexInTable].telephone
         self.indexInTable = indexInTable
-        self.personImage.image = UIImage(named: "male.jpeg")
+        super.init(nibName: nil, bundle: nil)
     }
 
     convenience init() {
-        self.init(fullName: "Name", phoneNumber: "Number", indexInTable: 0)
+//        self.init(fullName: "Name", phoneNumber: "Number", indexInTable: 0)
+        self.init(viewModel: ContactsViewModel(), indexInTable: 0)
     }
 
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     private lazy var personImage: UIImageView = {
@@ -122,19 +125,22 @@ class DetailsViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        guard let number = phoneNumberLabel.text else {
-            return
-        }
+//        guard let number = phoneNumberLabel.text else {
+//            return
+//        }
+//
+//        guard let name = nameLabel.text else {
+//            return
+//        }
 
-        guard let name = nameLabel.text else {
-            return
-        }
-
-        passInfoDelegate?.modifyWith(fullName: name, phoneNumber: number, indexInTable: indexInTable)
+//        passInfoDelegate?.modifyWith(fullName: name, phoneNumber: number, indexInTable: indexInTable)
     }
 
     @objc private func editButtonTapped() {
-        let editVC = EditOrAddContactViewController(fullName: fullName, phoneNumber: phoneNumber, indexInTable: indexInTable)
+        let fullName = contactsViewModel.contacts[indexInTable].firstName + " " + contactsViewModel.contacts[indexInTable].lastName
+        let number = contactsViewModel.contacts[indexInTable].telephone
+//        let editVC = EditOrAddContactViewController(fullName: fullName, phoneNumber: number, indexInTable: indexInTable)
+        let editVC = EditOrAddContactViewController(viewModel: contactsViewModel, indexInTable: indexInTable)
         editVC.editDelegate = self
         let editContactNavController = UINavigationController(rootViewController: editVC)
         self.modalPresentationStyle = .formSheet

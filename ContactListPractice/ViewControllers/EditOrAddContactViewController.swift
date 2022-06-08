@@ -8,10 +8,6 @@ protocol EditContactDelegate: AnyObject {
     func editWith(fullName: String, phoneNumber: String, indexInTable: Int)
 }
 
-protocol SaveContactDelegate: AnyObject {
-    func saveWith(name: String, phoneNumber: String)
-}
-
 class EditOrAddContactViewController: UIViewController {
 
     private var fullName: String = ""
@@ -25,21 +21,23 @@ class EditOrAddContactViewController: UIViewController {
     }
 
     weak var editDelegate: EditContactDelegate?
-    weak var saveDelegate: SaveContactDelegate?
 
-    init(fullName: String, phoneNumber: String, indexInTable: Int) {
-        super.init(nibName: nil, bundle: nil)
-        self.fullName = fullName
-        self.phoneNumber = phoneNumber
+    var contactsViewModel: ContactsViewModel
+
+    init (viewModel: ContactsViewModel, indexInTable: Int) {
+        contactsViewModel = viewModel
+        fullName = viewModel.contacts[indexInTable].firstName + " " + viewModel.contacts[indexInTable].lastName
+        phoneNumber = viewModel.contacts[indexInTable].telephone
         self.indexInTable = indexInTable
+        super.init(nibName: nil, bundle: nil)
     }
 
     convenience init() {
-        self.init(fullName: "Name", phoneNumber: "Phone Number", indexInTable: 0)
+        self.init(viewModel: ContactsViewModel(), indexInTable: 0)
     }
 
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
     private let gendersList = ["male", "female"]
@@ -109,38 +107,36 @@ class EditOrAddContactViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.nameField.placeholder = fullName
-        self.phoneNumberField.placeholder = phoneNumber
+        nameField.placeholder = fullName
+        phoneNumberField.placeholder = phoneNumber
         configureAddButton()
     }
 
-    private func configureAddButton() {
+    private func configureAddButton () {
         let add = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped))
         navigationItem.rightBarButtonItem = add
     }
 
     @objc func cancelButtonTapped() {
         print("dissmiss")
-        if self.isModal {
-            self.dismiss(animated: true)
+        if isModal {
+            dismiss(animated: true)
         } else {
-            self.navigationController?.popToRootViewController(animated: true)
+            navigationController?.popToRootViewController(animated: true)
         }
     }
 
     @objc private func saveButtonTapped() {
-        if self.isModal {
-            var nameToPass = ""
+        if isModal {
+            let nameToPass = (nameField.text == "") ? fullName : nameField.text
+            let phoneNumberToPass = (phoneNumberField.text == "") ? phoneNumber : phoneNumberField.text
 
-            if nameField.text == nil {
-
-            }
-            editDelegate?.editWith(fullName: nameField.text ?? "", phoneNumber: phoneNumberField.text ?? "", indexInTable: indexInTable)
-            self.dismiss(animated: true)
+            dismiss(animated: true)
         } else {
             guard let name = nameField.text, let number = phoneNumberField.text else { return }
-            saveDelegate?.saveWith(name: name, phoneNumber: number)
-            self.navigationController?.popToRootViewController(animated: true)
+//            saveDelegate?.saveWith(name: name, phoneNumber: number)
+            contactsViewModel.addContact(contact: Contact(firstName: name, lastName: "", telephone: number))
+            navigationController?.popToRootViewController(animated: true)
         }
     }
 

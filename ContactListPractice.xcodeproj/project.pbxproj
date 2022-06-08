@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		615B43E26F018DBBEC5DF14E /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615B4EE3B84AB017EE0BEEF2 /* HomeViewController.swift */; };
+		615B4F95F7E977CB1410C0F6 /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615B4B558369D49E8561DE9C /* ContactsViewModel.swift */; };
 		F884305D458C8A4D36188A67 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8843B3FFCD9953614C02CDE /* Contact.swift */; };
 		F884334AB4A18231C8F4477F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8843543B4343F0107998705 /* AppDelegate.swift */; };
 		F88435C40F1F9BCC4581D5E6 /* UITextField+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88434D4663B511A5FB4C7DE /* UITextField+ext.swift */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		615B4B558369D49E8561DE9C /* ContactsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsViewModel.swift; sourceTree = "<group>"; };
 		615B4EE3B84AB017EE0BEEF2 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		F884309BB967DF552B5C95F8 /* ContactListPractice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ContactListPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F884321FB68676C777C74130 /* UIViewController+ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+ext.swift"; sourceTree = "<group>"; };
@@ -53,6 +55,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		615B4638D61B44376140173A /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				615B4B558369D49E8561DE9C /* ContactsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
 		615B4A2AA0811147EC7A0E73 /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -78,6 +88,7 @@
 				F8843F3313C5175DB400B8FF /* Models */,
 				F88433C6D28355186A73332D /* LaunchScreen.storyboard */,
 				F8843AD13423A5F826E1C10E /* Extensions */,
+				615B4638D61B44376140173A /* ViewModels */,
 			);
 			path = ContactListPractice;
 			sourceTree = "<group>";
@@ -221,6 +232,7 @@
 				F88437041D9695DC1A173CC0 /* UIViewController+ext.swift in Sources */,
 				F88435C40F1F9BCC4581D5E6 /* UITextField+ext.swift in Sources */,
 				615B43E26F018DBBEC5DF14E /* HomeViewController.swift in Sources */,
+				615B4F95F7E977CB1410C0F6 /* ContactsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

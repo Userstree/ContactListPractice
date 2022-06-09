@@ -4,13 +4,7 @@
 
 import UIKit
 
-protocol PassInfoToHomeDelegate: AnyObject {
-    func modifyWith(fullName: String, phoneNumber: String, indexInTable: Int)
-}
-
 class DetailsViewController: UIViewController {
-
-    weak var passInfoDelegate: PassInfoToHomeDelegate?
 
     private var fullName: String = ""
     private var phoneNumber: String = ""
@@ -19,16 +13,11 @@ class DetailsViewController: UIViewController {
     private var contactsViewModel: ContactsViewModel
 
     init (viewModel: ContactsViewModel, indexInTable: Int) {
-        self.contactsViewModel = viewModel
-        self.fullName = viewModel.contacts[indexInTable].firstName + " " + viewModel.contacts[indexInTable].lastName
-        self.phoneNumber = viewModel.contacts[indexInTable].telephone
+        contactsViewModel = viewModel
+        fullName = viewModel.contacts[indexInTable].firstName + " " + viewModel.contacts[indexInTable].lastName
+        phoneNumber = viewModel.contacts[indexInTable].telephone
         self.indexInTable = indexInTable
         super.init(nibName: nil, bundle: nil)
-    }
-
-    convenience init() {
-//        self.init(fullName: "Name", phoneNumber: "Number", indexInTable: 0)
-        self.init(viewModel: ContactsViewModel(), indexInTable: 0)
     }
 
     required init?(coder: NSCoder) {
@@ -69,6 +58,7 @@ class DetailsViewController: UIViewController {
     private lazy var deleteButton: UIButton = {
         let button = UIButton()
         button.setTitle("delete", for: .normal)
+        button.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
         button.backgroundColor = .systemRed
         button.layer.cornerRadius = 8
         return button
@@ -114,8 +104,9 @@ class DetailsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.nameLabel.text = fullName
-        self.phoneNumberLabel.text = phoneNumber
+        nameLabel.text = fullName
+        phoneNumberLabel.text = phoneNumber
+        contactsViewModel.updateContactDelegate = self
     }
 
     private func addRightBarButton() {
@@ -123,28 +114,15 @@ class DetailsViewController: UIViewController {
         navigationItem.rightBarButtonItem = editButton
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-//        guard let number = phoneNumberLabel.text else {
-//            return
-//        }
-//
-//        guard let name = nameLabel.text else {
-//            return
-//        }
-
-//        passInfoDelegate?.modifyWith(fullName: name, phoneNumber: number, indexInTable: indexInTable)
+    @objc private func editButtonTapped() {
+        let editVC = EditOrAddContactViewController(viewModel: contactsViewModel, indexInTable: indexInTable)
+        let editContactNavController = UINavigationController(rootViewController: editVC)
+        present(editContactNavController, animated: true)
     }
 
-    @objc private func editButtonTapped() {
-        let fullName = contactsViewModel.contacts[indexInTable].firstName + " " + contactsViewModel.contacts[indexInTable].lastName
-        let number = contactsViewModel.contacts[indexInTable].telephone
-//        let editVC = EditOrAddContactViewController(fullName: fullName, phoneNumber: number, indexInTable: indexInTable)
-        let editVC = EditOrAddContactViewController(viewModel: contactsViewModel, indexInTable: indexInTable)
-        editVC.editDelegate = self
-        let editContactNavController = UINavigationController(rootViewController: editVC)
-        self.modalPresentationStyle = .formSheet
-        self.present(editContactNavController, animated: true)
+    @objc private func deleteButtonTapped() {
+        contactsViewModel.deleteContact(at: indexInTable)
+        navigationController?.popToRootViewController(animated: true)
     }
 
     private func configureBackground() {
@@ -174,10 +152,10 @@ class DetailsViewController: UIViewController {
     }
 }
 
-extension DetailsViewController: EditContactDelegate {
+extension DetailsViewController: UpdateContactViewModelDelegate {
 
-    func editWith(fullName: String, phoneNumber: String, indexInTable: Int) {
-        self.nameLabel.text = fullName
-        self.phoneNumberLabel.text = phoneNumber
+    func updateNameAndPhoneNumber(_ contact: Contact) {
+        nameLabel.text = contact.firstName + contact.lastName
+        phoneNumberLabel.text = contact.telephone
     }
 }

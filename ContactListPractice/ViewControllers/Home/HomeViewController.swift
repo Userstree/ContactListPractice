@@ -89,7 +89,7 @@ class HomeViewController: UIViewController {
 
     @objc private func addButtonTapped() {
         guard let viewModel = viewModel else { return }
-        let editVC = EditOrAddContactViewController(viewModel: viewModel, indexInTable: 0)
+        let editVC = EditOrAddContactViewController(viewModelAndDefault: viewModel)
         navigationController?.pushViewController(editVC, animated: true)
     }
 
@@ -158,8 +158,6 @@ extension HomeViewController: UITableViewDelegate {
         guard let viewModel = viewModel else { return }
         let contactInfoVC = DetailsViewController(viewModel: viewModel, indexInTable: indexPath.row)
 
-        contactInfoVC.passInfoDelegate = self
-
         self.navigationController?.pushViewController(contactInfoVC, animated: true)
     }
 }
@@ -196,15 +194,5 @@ extension HomeViewController: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         100
-    }
-}
-
-extension  HomeViewController: PassInfoToHomeDelegate {
-
-    func modifyWith(fullName: String, phoneNumber: String, indexInTable: Int) {
-        let fullNameComponents = fullName.components(separatedBy: " ")
-        let firstName = fullNameComponents[0]
-        let lastName = fullNameComponents[1]
-        print(firstName, " and ", lastName)
     }
 }

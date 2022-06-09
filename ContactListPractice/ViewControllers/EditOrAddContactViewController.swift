@@ -20,20 +20,22 @@ class EditOrAddContactViewController: UIViewController {
         }
     }
 
-    weak var editDelegate: EditContactDelegate?
-
     var contactsViewModel: ContactsViewModel
 
-    init (viewModel: ContactsViewModel, indexInTable: Int) {
+    init (viewModel: ContactsViewModel, indexInTable: Int? = nil) {
         contactsViewModel = viewModel
-        fullName = viewModel.contacts[indexInTable].firstName + " " + viewModel.contacts[indexInTable].lastName
-        phoneNumber = viewModel.contacts[indexInTable].telephone
-        self.indexInTable = indexInTable
+        if let index = indexInTable {
+            fullName = viewModel.contacts[index].firstName + " " + viewModel.contacts[index].lastName
+            phoneNumber = viewModel.contacts[index].telephone
+            self.indexInTable = index
+        }
         super.init(nibName: nil, bundle: nil)
     }
 
-    convenience init() {
-        self.init(viewModel: ContactsViewModel(), indexInTable: 0)
+    convenience init(viewModelAndDefault: ContactsViewModel) {
+        self.init(viewModel: viewModelAndDefault, indexInTable: 0)
+        fullName = "Enter Name"
+        phoneNumber = "Enter phone number"
     }
 
     required init?(coder: NSCoder) {
@@ -118,7 +120,6 @@ class EditOrAddContactViewController: UIViewController {
     }
 
     @objc func cancelButtonTapped() {
-        print("dissmiss")
         if isModal {
             dismiss(animated: true)
         } else {
@@ -130,11 +131,10 @@ class EditOrAddContactViewController: UIViewController {
         if isModal {
             let nameToPass = (nameField.text == "") ? fullName : nameField.text
             let phoneNumberToPass = (phoneNumberField.text == "") ? phoneNumber : phoneNumberField.text
-
+            contactsViewModel.editContact(at: indexInTable, name: nameToPass ?? "", phoneNumber: phoneNumberToPass ?? "")
             dismiss(animated: true)
         } else {
             guard let name = nameField.text, let number = phoneNumberField.text else { return }
-//            saveDelegate?.saveWith(name: name, phoneNumber: number)
             contactsViewModel.addContact(contact: Contact(firstName: name, lastName: "", telephone: number))
             navigationController?.popToRootViewController(animated: true)
         }

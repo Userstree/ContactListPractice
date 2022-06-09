@@ -9,11 +9,16 @@ protocol ContactsViewModelDelegate: AnyObject {
     func didUpdateContactsList(_ contacts: [Contact])
 }
 
+protocol UpdateContactViewModelDelegate: AnyObject {
+    func updateNameAndPhoneNumber(_ contact: Contact)
+}
+
 class ContactsViewModel {
 
     init() {}
 
     weak var delegate: ContactsViewModelDelegate?
+    weak var updateContactDelegate: UpdateContactViewModelDelegate?
 
     var contacts: [Contact] = []
 
@@ -60,6 +65,8 @@ extension ContactsViewModel {
     }
 
     func editContact(at index: Int, name: String, phoneNumber: String) {
-
+        contacts[index] = Contact(firstName: name, lastName: "", telephone: phoneNumber)
+        delegate?.didUpdateContactsList(contacts)
+        updateContactDelegate?.updateNameAndPhoneNumber(contacts[index])
     }
 }

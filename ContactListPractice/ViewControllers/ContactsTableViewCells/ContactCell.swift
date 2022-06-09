@@ -57,7 +57,7 @@ class ContactCell: UITableViewCell {
     func bind(with model: Contact) {
         let name = model.firstName + " " + model.lastName
         self.name.text = name
-        self.phoneNumber.text = model.telephone
+        phoneNumber.text = model.telephone
         personImage.image = imageWith(name: name)
     }
 

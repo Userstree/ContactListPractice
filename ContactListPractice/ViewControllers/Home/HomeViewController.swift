@@ -16,11 +16,10 @@ class HomeViewController: UIViewController {
     var contacts: [Contact] {
         didSet {
             if contacts.isEmpty {
-                print("Empty")
-                self.view.bringSubviewToFront(noContactsMessageLabel)
+                view.bringSubviewToFront(noContactsMessageLabel)
             } else {
-                self.view.addSubview(table)
-                self.view.bringSubviewToFront(table)
+                view.addSubview(table)
+                view.bringSubviewToFront(table)
             }
             table.reloadData()
         }
@@ -93,33 +92,6 @@ class HomeViewController: UIViewController {
         navigationController?.pushViewController(editVC, animated: true)
     }
 
-    // Remove later
-//    private func fetchContacts() {
-//        let store = CNContactStore()
-//        store.requestAccess(for: .contacts) { (granted, error) in
-//            if let error = error {
-//                print("failed to request access", error)
-//                return
-//            }
-//            if granted {
-//                let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey]
-//                let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
-//                do {
-//                    try store.enumerateContacts(with: request, usingBlock: { (contact, stopPointer) in
-//                        self.contacts.append(Contact(firstName: contact.givenName,
-//                                lastName: contact.familyName,
-//                                telephone: contact.phoneNumbers.first?.value.stringValue ?? ""))
-//                    })
-//                } catch let error {
-//                    print("Failed to enumerate contact", error)
-//                }
-//            } else {
-//                print("access denied")
-//            }
-//        }
-//    }
-    //
-
     private func configureTable() {
         view.addSubview(table)
         view.addSubview(noContactsMessageLabel)
@@ -151,14 +123,10 @@ extension HomeViewController: UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-//        let contactInfoVC = DetailsViewController(
-//                fullName: (contacts[indexPath.row].firstName + " " + contacts[indexPath.row].lastName),
-//                phoneNumber: contacts[indexPath.row].telephone,
-//                indexInTable: indexPath.row)
         guard let viewModel = viewModel else { return }
         let contactInfoVC = DetailsViewController(viewModel: viewModel, indexInTable: indexPath.row)
 
-        self.navigationController?.pushViewController(contactInfoVC, animated: true)
+        navigationController?.pushViewController(contactInfoVC, animated: true)
     }
 }
 

@@ -20,7 +20,6 @@
 		F8843B250C9D856049EC80BA /* female.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F884397E0D230BC070E984A0 /* female.jpeg */; };
 		F8843D53C3D43F49016520D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F88436716EE9A2E3A259205E /* Assets.xcassets */; };
 		F8843D9B26DC896DCC47D9B1 /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F884384666F9CB90DF38B777 /* DetailsViewController.swift */; };
-		F8843EB1F0D54F9D448AE5C9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8843ECD46D6487C962346DD /* ViewController.swift */; };
 		F8843F968EA6C00CF7B78A80 /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8843B864029EFFD06890C52 /* ContactCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -41,7 +40,6 @@
 		F8843B864029EFFD06890C52 /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		F8843DEB0BBCDEB1AA584D2E /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.info; path = Info.plist; sourceTree = "<group>"; };
 		F8843E9A75D4C1F8588F39FB /* EditOrAddContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditOrAddContactViewController.swift; sourceTree = "<group>"; };
-		F8843ECD46D6487C962346DD /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,7 +94,6 @@
 		F88437666D2ECEB0E9F80DC9 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				F8843ECD46D6487C962346DD /* ViewController.swift */,
 				F884384666F9CB90DF38B777 /* DetailsViewController.swift */,
 				F884344CB4BEF9265CC68C8C /* ContactsTableViewCells */,
 				F8843E9A75D4C1F8588F39FB /* EditOrAddContactViewController.swift */,
@@ -224,7 +221,6 @@
 			files = (
 				F884334AB4A18231C8F4477F /* AppDelegate.swift in Sources */,
 				F884380063EA0BB896C27DD7 /* SceneDelegate.swift in Sources */,
-				F8843EB1F0D54F9D448AE5C9 /* ViewController.swift in Sources */,
 				F884305D458C8A4D36188A67 /* Contact.swift in Sources */,
 				F8843D9B26DC896DCC47D9B1 /* DetailsViewController.swift in Sources */,
 				F8843F968EA6C00CF7B78A80 /* ContactCell.swift in Sources */,

@@ -8,4 +8,5 @@ struct Contact {
     var firstName: String
     var lastName: String
     var telephone: String
+    var gender = "male.jpeg"
 }

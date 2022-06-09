@@ -14,10 +14,12 @@ class DetailsViewController: UIViewController {
 
     init (viewModel: ContactsViewModel, indexInTable: Int) {
         contactsViewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+
         fullName = viewModel.contacts[indexInTable].firstName + " " + viewModel.contacts[indexInTable].lastName
         phoneNumber = viewModel.contacts[indexInTable].telephone
         self.indexInTable = indexInTable
-        super.init(nibName: nil, bundle: nil)
+        personImage.image = UIImage(named: viewModel.contacts[indexInTable].gender)
     }
 
     required init?(coder: NSCoder) {
@@ -157,5 +159,6 @@ extension DetailsViewController: UpdateContactViewModelDelegate {
     func updateNameAndPhoneNumber(_ contact: Contact) {
         nameLabel.text = contact.firstName + contact.lastName
         phoneNumberLabel.text = contact.telephone
+        personImage.image = UIImage(named: "\(contact.gender)")
     }
 }

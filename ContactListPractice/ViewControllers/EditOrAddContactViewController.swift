@@ -135,7 +135,10 @@ class EditOrAddContactViewController: UIViewController {
             dismiss(animated: true)
         } else {
             guard let name = nameField.text, let number = phoneNumberField.text else { return }
-            contactsViewModel.addContact(contact: Contact(firstName: name, lastName: "", telephone: number))
+            contactsViewModel.addContact(contact: Contact(firstName: name,
+                                         lastName: "",
+                                         telephone: number,
+                                         gender: setGender))
             navigationController?.popToRootViewController(animated: true)
         }
     }
